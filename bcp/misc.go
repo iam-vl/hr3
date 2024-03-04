@@ -1,21 +1,32 @@
 package bcp
 
-// func deleteData() {
-// 	ctx := context.Background()
-// 	coll := client.Database(DBNAME).Collection(USERCOLL)
+import (
+	"context"
+	"log"
 
-// 	user := types.User{
-// 		FirstName: "Vassily",
-// 		LastName:  "La",
-// 	}
+	"github.com/iam-vl/hr3/db"
+	"github.com/iam-vl/hr3/types"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
-// 	_, err = coll.InsertOne(ctx, user)
-// 	logf(err)
+func InsertData(client *mongo.Client) {
+	ctx := context.Background()
+	coll := client.Database(db.DBNAME).Collection("users")
 
-// 	var vl types.User
-// 	err = coll.FindOne(ctx, bson.M{}).Decode(&vl)
-// 	logf(err)
+	user := types.User{
+		FirstName: "Vassily",
+		LastName:  "La",
+	}
 
-// 	line()
-// 	fmt.Println(vl)
-// }
+	_, err := coll.InsertOne(ctx, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// var vl types.User
+	// err = coll.FindOne(ctx, bson.M{}).Decode(&vl)
+	// logf(err)
+
+	// line()
+	// fmt.Println(vl)
+}

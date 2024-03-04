@@ -25,6 +25,8 @@ func main() {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
 	logf(err)
 
+	// bcp.InsertData(client)
+
 	uh := api.NewUserHandler(db.NewMongoUserStore(client)) // user handler
 
 	app := fiber.New()
