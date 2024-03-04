@@ -17,6 +17,12 @@ const (
 	USERCOLL = "users"
 )
 
+var config = fiber.Config{
+	ErrorHandler: func(c *fiber.Ctx, err error) error {
+		return c.JSON(map[string]string{"error": err.Error()})
+	},
+}
+
 func main() {
 
 	listenAddr := flag.String("listenAddr", ":1111", "The listen address of the API server")
@@ -29,7 +35,7 @@ func main() {
 
 	uh := api.NewUserHandler(db.NewMongoUserStore(client)) // user handler
 
-	app := fiber.New()
+	app := fiber.New(config) // add config for errors
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/user", uh.HandleGetUsers)
