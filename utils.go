@@ -11,6 +11,12 @@ func logf(err error) {
 	}
 }
 
+func panicr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func line() {
 	fmt.Println("=====================")
 }
