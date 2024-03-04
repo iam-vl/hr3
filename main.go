@@ -39,6 +39,8 @@ func main() {
 	apiv1 := app.Group("/api/v1")
 
 	apiv1.Get("/user", uh.HandleGetUsers)
+	apiv1.Post("/user", uh.HandlePostUser)
 	apiv1.Get("/user/:id", uh.HandleGetUser)
+
 	app.Listen(*listenAddr)
 }
