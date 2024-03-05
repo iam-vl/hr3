@@ -36,28 +36,26 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	fmt.Println("Inside HandlePutUser()")
 	var (
-		update bson.M
+		values bson.M
 		userId = c.Params("id")
 	)
 	oid, err := primitive.ObjectIDFromHex(userId)
-	fmt.Printf("Oid: %v \t Oid type: %T\n", oid, oid)
 	if err != nil {
-		return nil
+		return err
 	}
-	err = c.BodyParser(&update)
-	if err != nil {
+
+	if err = c.BodyParser(&values); err != nil {
 		return err
 	}
 	filter := bson.M{"_id": oid}
 	fmt.Println("Inside HandlePutUser() - updating user")
-	err = h.userStore.UpdateUser(c.Context(), filter, update)
-	fmt.Printf("Context: %+v\n", c.Context())
-	fmt.Printf("Filter: %+v\n", filter)
-	fmt.Printf("Update: %+v\n", update)
-	if err != nil {
-		return nil
+	if err = h.userStore.UpdateUser(c.Context(), filter, values); err != nil {
+		return err
 	}
-	fmt.Printf("User ID: %v\n", userId)
+	// fmt.Printf("Context: %+v\n", c.Context())
+	// fmt.Printf("Filter: %+v\n", filter)
+	// fmt.Printf("Update: %+v\n", update)
+	// fmt.Printf("User ID: %v\n", userId)
 	// At around 25:00, you get an error like that: {"error": "update document must contain key beginning with '$"}
 	return c.JSON(map[string]string{"Updated user": userId})
 }
