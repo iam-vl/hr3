@@ -27,19 +27,19 @@ func isEmailValid(e string) bool {
 	return emailRegex.MatchString(e)
 }
 
-func (params UserParams) Validate() []string {
-	errors := []string{}
+func (params UserParams) Validate() map[string]string {
+	errors := map[string]string{}
 	if len(params.FirstName) < MIN_FNAME_LEN {
-		errors = append(errors, fmt.Sprintf("First name must be at least %d characters", MIN_FNAME_LEN))
+		errors["firstName"] = fmt.Sprintf("First name must be at least %d characters", MIN_FNAME_LEN)
 	}
 	if len(params.LastName) < MIN_FNAME_LEN {
-		errors = append(errors, fmt.Sprintf("Last name must be at least %d characters", MIN_LNAME_LEN))
+		errors["lastName"] = fmt.Sprintf("Last name must be at least %d characters", MIN_LNAME_LEN)
 	}
 	if len(params.Password) < MIN_FNAME_LEN {
-		errors = append(errors, fmt.Sprintf("First name must be at least %d characters", MIN_PWD_LEN))
+		errors["password"] = fmt.Sprintf("Password must be at least %d characters", MIN_PWD_LEN)
 	}
 	if !isEmailValid(params.Email) {
-		errors = append(errors, fmt.Sprintf("Please enter a correct email address"))
+		errors["email"] = fmt.Sprintf("Please enter a correct email address")
 	}
 	return errors
 }
