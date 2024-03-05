@@ -36,7 +36,8 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 	fmt.Println("Inside HandlePutUser()")
 	var (
-		values bson.M
+		// values bson.M
+		params types.UpdateUserParams
 		userId = c.Params("id")
 	)
 	oid, err := primitive.ObjectIDFromHex(userId)
@@ -44,12 +45,13 @@ func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err = c.BodyParser(&values); err != nil {
+	// if err = c.BodyParser(&values); err != nil {
+	if err = c.BodyParser(&params); err != nil {
 		return err
 	}
 	filter := bson.M{"_id": oid}
 	fmt.Println("Inside HandlePutUser() - updating user")
-	if err = h.userStore.UpdateUser(c.Context(), filter, values); err != nil {
+	if err = h.userStore.UpdateUser(c.Context(), filter, params); err != nil {
 		return err
 	}
 	// fmt.Printf("Context: %+v\n", c.Context())
