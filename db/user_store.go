@@ -18,6 +18,8 @@ type UserStore interface {
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
+	DeleteUser(context.Context, string) error
+	UpdateUser(ctx context.Context, filter bson.M, update bson.M) error
 }
 
 type MongoUserStore struct {
@@ -32,6 +34,31 @@ func NewMongoUserStore(cl *mongo.Client) *MongoUserStore {
 	}
 }
 
+func (s *MongoUserStore) DeleteUser(ctx context.Context, userId string) error {
+	oid, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return err
+	}
+	_, err = s.coll.DeleteOne(ctx, bson.M{"_id": oid})
+	if err != nil {
+		return err
+	}
+	// if res.DeletedCount == 0 {}
+	return nil
+}
+
+func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, update bson.M) error {
+	fmt.Println("Inside UpdateUser()")
+	_, err := s.coll.UpdateOne(ctx, filter, update)
+	fmt.Printf("Ctx: %+v\n", ctx)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Quitting UpdateUser()")
+
+	return nil
+}
+
 func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*types.User, error) {
 	res, err := s.coll.InsertOne(ctx, user)
 	if err != nil {
@@ -42,7 +69,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 }
 
 func (s MongoUserStore) GetUsers(ctx context.Context) ([]*types.User, error) {
-	fmt.Println("inside get users")
+	// fmt.Println("inside get users")
 	cursor, err := s.coll.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err

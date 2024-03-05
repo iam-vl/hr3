@@ -1,11 +1,15 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/iam-vl/hr3/db"
 	"github.com/iam-vl/hr3/types"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserHandler struct {
@@ -16,6 +20,46 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 	return &UserHandler{
 		userStore: userStore,
 	}
+}
+
+func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
+	userId := c.Params("id")
+	err := h.userStore.DeleteUser(c.Context(), userId)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return c.JSON(map[string]string{"error": "Cannot delete a user with an incorrect id"})
+		}
+	}
+	return c.JSON(map[string]string{"Deleted user": userId})
+}
+
+func (h *UserHandler) HandlePutUser(c *fiber.Ctx) error {
+	fmt.Println("Inside HandlePutUser()")
+	var (
+		update bson.M
+		userId = c.Params("id")
+	)
+	oid, err := primitive.ObjectIDFromHex(userId)
+	fmt.Printf("Oid: %v \t Oid type: %T\n", oid, oid)
+	if err != nil {
+		return nil
+	}
+	err = c.BodyParser(&update)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": oid}
+	fmt.Println("Inside HandlePutUser() - updating user")
+	err = h.userStore.UpdateUser(c.Context(), filter, update)
+	fmt.Printf("Context: %+v\n", c.Context())
+	fmt.Printf("Filter: %+v\n", filter)
+	fmt.Printf("Update: %+v\n", update)
+	if err != nil {
+		return nil
+	}
+	fmt.Printf("User ID: %v\n", userId)
+	// At around 25:00, you get an error like that: {"error": "update document must contain key beginning with '$"}
+	return c.JSON(map[string]string{"Updated user": userId})
 }
 
 func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
@@ -46,7 +90,9 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 
 	user, err := h.userStore.GetUserById(c.Context(), id)
 	if err != nil {
-		return err
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return c.JSON(map[string]string{"msg": "Cannot find a user with this ID"})
+		}
 	}
 	return c.JSON(user)
 }
