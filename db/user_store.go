@@ -14,7 +14,13 @@ const (
 	USERCOLL = "users"
 )
 
+type Dropper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dropper
+
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	InsertUser(context.Context, *types.User) (*types.User, error)
@@ -33,6 +39,12 @@ func NewMongoUserStore(cl *mongo.Client) *MongoUserStore {
 		coll:   cl.Database(DBNAME).Collection(USERCOLL),
 	}
 }
+
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("----Dropping user collection")
+	return s.coll.Drop(ctx)
+}
+
 func (s *MongoUserStore) DeleteUser(ctx context.Context, userId string) error {
 	oid, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
@@ -45,6 +57,7 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, userId string) error {
 	// if res.DeletedCount == 0 {}
 	return nil
 }
+
 func (s *MongoUserStore) UpdateUser(ctx context.Context, filter bson.M, params types.UpdateUserParams) error {
 	// values := bson.M{}
 	{
