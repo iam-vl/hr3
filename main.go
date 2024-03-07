@@ -33,7 +33,7 @@ func main() {
 
 	// bcp.InsertData(client)
 
-	uh := api.NewUserHandler(db.NewMongoUserStore(client)) // user handler
+	uh := api.NewUserHandler(db.NewMongoUserStore(client, DBNAME)) // user handler
 
 	app := fiber.New(config) // add config for errors
 	apiv1 := app.Group("/api/v1")

@@ -10,7 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const testDbUri = "mongodb://localhost:27017"
+const (
+	testDbUri = "mongodb://localhost:27017"
+	dbName    = "hr3-test"
+)
 
 type testDb struct {
 	db.UserStore
@@ -29,7 +32,7 @@ func setup(t *testing.T) *testDb {
 		log.Fatal(err)
 	}
 	return &testDb{
-		UserStore: db.NewMongoUserStore(client),
+		UserStore: db.NewMongoUserStore(client, dbName),
 	}
 
 }
