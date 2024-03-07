@@ -1,11 +1,16 @@
 package api
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"log"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/iam-vl/hr3/db"
+	"github.com/iam-vl/hr3/types"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,4 +45,17 @@ func setup(t *testing.T) *testDb {
 func TestPostUser(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.tearDown(t)
+
+	app := fiber.New()
+	uh := NewUserHandler(tdb.UserStore)
+	app.Post("/", uh.HandlePostUser)
+	params := types.UserParams{
+		Email:     "gztrk@eng.com",
+		FirstName: "Vas",
+		LastName:  "Lap",
+		Password:  "hfgdhjgfhjvfc",
+	}
+	b, _ := json.Marshal(params)
+	req := httptest.NewRequest("POST", "/", bytes.NewReader(b))
+
 }
