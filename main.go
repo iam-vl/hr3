@@ -11,12 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-	DBURI    = "mongodb://localhost:27017"
-	DBNAME   = "hr3"
-	USERCOLL = "users"
-)
-
 var config = fiber.Config{
 	ErrorHandler: func(c *fiber.Ctx, err error) error {
 		return c.JSON(map[string]string{"error": err.Error()})
@@ -28,12 +22,12 @@ func main() {
 	listenAddr := flag.String("listenAddr", ":1111", "The listen address of the API server")
 	flag.Parse()
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
-	logf(err)
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	ut.logf(err)
 
 	// bcp.InsertData(client)
 
-	uh := api.NewUserHandler(db.NewMongoUserStore(client, DBNAME)) // user handler
+	uh := api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME)) // user handler
 
 	app := fiber.New(config) // add config for errors
 	apiv1 := app.Group("/api/v1")

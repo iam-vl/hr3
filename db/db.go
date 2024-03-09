@@ -1,6 +1,9 @@
 package db
 
-const DBNAME = "hr3"
+const (
+	DBURI  = "mongodb://localhost:27017"
+	DBNAME = "hr3"
+)
 
 // func ToObjectId(id string) (primitive.ObjectID, err) {
 // 	oid, err := primitive.ObjectIDFromHex(id)
