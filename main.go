@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/iam-vl/hr3/api"
@@ -23,7 +24,9 @@ func main() {
 	flag.Parse()
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-	ut.logf(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// bcp.InsertData(client)
 

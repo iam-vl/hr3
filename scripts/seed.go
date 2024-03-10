@@ -7,6 +7,7 @@ import (
 
 	"github.com/iam-vl/hr3/db"
 	"github.com/iam-vl/hr3/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,13 +21,14 @@ func main() {
 	}
 
 	fmt.Println("Creating collections...")
-	hotelStore := db.NewMongoHotelStore(client, db.DBNAME)
-	roomStore := db.NewMongoRoomStore(client, db.DBNAME)
+	hotelStore := db.NewMongoHotelStore(client)
+	roomStore := db.NewMongoRoomStore(client, hotelStore)
 
 	fmt.Println("Seeding database...")
 	hotel := types.Hotel{
 		Name:     "Grand dauphin",
 		Location: "Lyon, France",
+		Rooms:    []primitive.ObjectID{},
 	}
 	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
 	if err != nil {
