@@ -19,6 +19,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	colls := []string{"hotels", "rooms"} // collections to drop
+	// if err := client.Database(db.DBNAME).Drop(ctx); err != nil
+	for _, c := range colls {
+		if err := client.Database(db.DBNAME).Collection(c).Drop(ctx); err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	fmt.Println("Creating collections...")
 	hotelStore := db.NewMongoHotelStore(client)
