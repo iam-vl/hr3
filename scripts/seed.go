@@ -12,29 +12,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func main() {
-	ctx := context.Background()
-	fmt.Println("Connecting mongo...")
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-	if err != nil {
-		log.Fatal(err)
-	}
-	colls := []string{"hotels", "rooms"} // collections to drop
-	// if err := client.Database(db.DBNAME).Drop(ctx); err != nil
-	for _, c := range colls {
-		if err := client.Database(db.DBNAME).Collection(c).Drop(ctx); err != nil {
-			log.Fatal(err)
-		}
-	}
+var (
+	client     *mongo.Client
+	roomStore  db.RoomStore
+	hotelStore db.HotelStore
+	ctx        = context.Background()
+)
 
-	fmt.Println("Creating collections...")
-	hotelStore := db.NewMongoHotelStore(client)
-	roomStore := db.NewMongoRoomStore(client, hotelStore)
-
+func seedHotel(name, location string) {
 	fmt.Println("Seeding database...")
 	hotel := types.Hotel{
-		Name:     "Grand dauphin",
-		Location: "Lyon, France",
+		Name:     name,
+		Location: location,
 		Rooms:    []primitive.ObjectID{},
 	}
 	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
@@ -56,4 +45,31 @@ func main() {
 		}
 		fmt.Printf("Room: %+v\n", insertedRoom)
 	}
+}
+
+func main() {
+	initDB()
+	seedHotel("Grand Dauphin", "Lyon, France")
+	seedHotel("The cozy hotel", "Netherlands")
+	seedHotel("Don't die in your sleep", "London")
+}
+
+func initDB() {
+	var err error
+	fmt.Println("Connecting mongo...")
+	client, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+	// if err := client.Database(db.DBNAME).Drop(ctx); err != nil
+	colls := []string{"hotels", "rooms"} // collections to drop
+	for _, c := range colls {
+		if err := client.Database(db.DBNAME).Collection(c).Drop(ctx); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	fmt.Println("Creating collections...")
+	hotelStore = db.NewMongoHotelStore(client)
+	roomStore = db.NewMongoRoomStore(client, hotelStore)
 }
