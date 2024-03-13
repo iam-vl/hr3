@@ -20,7 +20,8 @@ func NewHotelHandler(hs db.HotelStore, rs db.RoomStore) *HotelHandler {
 }
 
 type HotelQueryParams struct {
-	Rooms bool
+	Rooms  bool
+	Rating int
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
