@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/iam-vl/hr3/types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,7 +29,11 @@ func NewMongoHotelStore(cl *mongo.Client) *MongoHotelStore {
 }
 
 func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
+
+	fmt.Println("Inside hotelstore.GetHotels")
+	fmt.Printf("Coll type: %T\n", s.coll)
 	resp, err := s.coll.Find(ctx, filter)
+	fmt.Println("Response:", resp)
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +41,7 @@ func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*type
 	if err := resp.All(ctx, &hotels); err != nil {
 		return nil, err
 	}
+	fmt.Println("Hotels:", hotels)
 	return hotels, nil
 }
 

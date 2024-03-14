@@ -27,7 +27,7 @@ func seedHotel(name, location string, rating int) {
 		Rooms:    []primitive.ObjectID{},
 		Rating:   rating,
 	}
-	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
+	insertedHotel, err := hotelStore.Insert(ctx, &hotel)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func main() {
 	initDB()
 	seedHotel("Grand Dauphin", "Lyon, France", 3)
 	seedHotel("The cozy hotel", "Netherlands", 4)
-	seedHotel("Don't die in your sleep", "London", 2)
+	seedHotel("Don't die in your sleep", "London", 1)
 }
 
 func initDB() {
