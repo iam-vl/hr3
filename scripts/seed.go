@@ -65,7 +65,7 @@ func initDB() {
 	// if err := client.Database(db.DBNAME).Drop(ctx); err != nil
 	colls := []string{"hotels", "rooms"} // collections to drop
 	for _, c := range colls {
-		if err := client.Database(db.DBNAME).Collection(c).Drop(ctx); err != nil {
+		if err := client.Database(db.TEST_DBNAME).Collection(c).Drop(ctx); err != nil {
 			log.Fatal(err)
 		}
 	}
