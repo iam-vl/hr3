@@ -27,15 +27,15 @@ func seedHotel(name, location string, rating int) {
 		Rooms:    []primitive.ObjectID{},
 		Rating:   rating,
 	}
-	insertedHotel, err := hotelStore.Insert(ctx, &hotel)
+	insertedHotel, err := hotelStore.InsertHotel(ctx, &hotel)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Hotel: %+v\n", insertedHotel)
 
-	roomA := types.Room{Type: types.SingleRoomType, BasePrice: 99.99}
-	roomB := types.Room{Type: types.DeluxeRoomType, BasePrice: 199.99}
-	roomC := types.Room{Type: types.SeaviewRoomType, BasePrice: 139.99}
+	roomA := types.Room{Size: "Small", Price: 99.99}
+	roomB := types.Room{Size: "Normal", Price: 129.99}
+	roomC := types.Room{Size: "Kingsize", Price: 189.99}
 	rooms := []types.Room{roomA, roomB, roomC}
 
 	for _, r := range rooms {
