@@ -30,18 +30,21 @@ func main() {
 
 	// bcp.InsertData(client)
 
-	// Handlers
+	// Data stores and handlers
 	var (
-		uh         = api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME))
 		hotelStore = db.NewMongoHotelStore(client)
 		roomStore  = db.NewMongoRoomStore(client, hotelStore)
-		// userStore = db.NewMongoUserStore(client, db.DBNAME)
-		store = &db.Store{
+		userStore  = db.NewMongoUserStore(client)
+		store      = &db.Store{
 			Hotel: hotelStore,
 			Room:  roomStore,
+			User:  userStore,
 		}
 
-		hh    = api.NewHotelHandler(store)
+		// uh = api.NewUserHandler(db.NewMongoUserStore(client))
+		uh = api.NewUserHandler(userStore)
+		hh = api.NewHotelHandler(store)
+
 		app   = fiber.New(config) // add config for errors
 		apiv1 = app.Group("/api/v1")
 	)

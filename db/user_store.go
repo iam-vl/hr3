@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/iam-vl/hr3/db"
 	"github.com/iam-vl/hr3/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -33,10 +34,11 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoUserStore(cl *mongo.Client, dbName string) *MongoUserStore {
+// func NewMongoUserStore(cl *mongo.Client, dbName string) *MongoUserStore {
+func NewMongoUserStore(cl *mongo.Client) *MongoUserStore {
 	return &MongoUserStore{
 		client: cl,
-		coll:   cl.Database(dbName).Collection(USERCOLL),
+		coll:   cl.Database(db.DBNAME).Collection(USERCOLL),
 	}
 }
 
