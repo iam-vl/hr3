@@ -14,6 +14,7 @@ type HotelStore interface {
 	InsertHotel(context.Context, *types.Hotel) (*types.Hotel, error)
 	Update(ctx context.Context, filter bson.M, update bson.M) error
 	GetHotels(context.Context, bson.M) ([]*types.Hotel, error)
+	GetHotelById(context.Context, primitive.ObjectID) (*types.Hotel, error)
 }
 
 type MongoHotelStore struct {
@@ -30,7 +31,7 @@ func NewMongoHotelStore(cl *mongo.Client) *MongoHotelStore {
 
 func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
 
-	fmt.Println("Inside hotelstore.GetHotels")
+	fmt.Println("Inside hotelstore.GetHotel")
 	fmt.Printf("Coll type: %T\n", s.coll)
 	resp, err := s.coll.Find(ctx, filter)
 	fmt.Println("Response:", resp)
@@ -43,6 +44,15 @@ func (s *MongoHotelStore) GetHotels(ctx context.Context, filter bson.M) ([]*type
 	}
 	fmt.Println("Hotels:", hotels)
 	return hotels, nil
+}
+
+func (s *MongoHotelStore) GetHotelById(ctx context.Context, id primitive.ObjectID) (*types.Hotel, error) {
+	var hotel types.Hotel
+	err := s.coll.FindOne(ctx, bson.M{"_id": id}).Decode(&hotel)
+	if err != nil {
+		return nil, err
+	}
+	return &hotel, nil
 }
 
 func (s *MongoHotelStore) Update(ctx context.Context, f bson.M, u bson.M) error {

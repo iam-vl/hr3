@@ -37,7 +37,7 @@ func (s *MongoRoomStore) GetRoomsByHotelId(ctx context.Context, filter bson.M) (
 	if err := resp.All(ctx, &rooms); err != nil {
 		return nil, err
 	}
-	return rooms, err
+	return rooms, nil
 
 }
 
@@ -50,11 +50,8 @@ func (s *MongoRoomStore) InsertRoom(ctx context.Context, room *types.Room) (*typ
 	// Update the hotel with roomID
 	filter := bson.M{"_id": room.HotelID}
 	update := bson.M{"$push": bson.M{"rooms": room.ID}}
-	err = s.HotelStore.Update(ctx, filter, update)
-	if err != nil {
+	if err := s.HotelStore.Update(ctx, filter, update); err != nil {
 		return nil, err
 	}
-
-	// to be updated Lecture 7
 	return room, nil
 }
